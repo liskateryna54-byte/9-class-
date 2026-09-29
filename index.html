@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Життя з розумними пристроями - Інтерактивний урок</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --success: #00b09b;
+            --success-border: #008f7a;
+            --danger: #ff416c;
+            --danger-bg: rgba(255, 200, 200, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --text: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        h1, h2 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+        }
+        
+        h1 { text-align: center; font-size: 2.2rem; }
+        
+        .header-inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-inputs input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.7);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.8);
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .header-inputs input:focus {
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.75);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .task-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .option-label:hover {
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .option-label input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .btn:disabled {
+            background: #999 !important;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.8;
+        }
+
+        .chip-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            min-height: 50px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        .chip {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 2px solid var(--secondary);
+            font-weight: 600;
+            user-select: none;
+            transition: 0.2s;
+        }
+
+        .chip:hover { background: #e3f2fd; }
+        .chip.selected { background: var(--secondary); color: white; }
+
+        .drop-zone {
+            display: inline-block;
+            min-width: 160px;
+            min-height: 38px;
+            border-bottom: 2px dashed var(--text);
+            margin: 0 5px;
+            vertical-align: middle;
+            text-align: center;
+            background: rgba(255,255,255,0.6);
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 4px;
+        }
+
+        .sort-buckets {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .bucket {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed #888;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-height: 100px;
+        }
+        .bucket-title { font-weight: bold; margin-bottom: 10px; color: #333; pointer-events: none;}
+
+        .text-input-task {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        /* Статуси після перевірки */
+        .correct-task {
+            background: rgba(200, 255, 200, 0.85) !important;
+            border-color: var(--success-border) !important;
+        }
+        .incorrect-task {
+            background: var(--danger-bg) !important;
+            border-color: var(--danger) !important;
+        }
+        .locked { 
+            pointer-events: none !important; 
+        }
+        .locked input, .locked button, .locked .chip, .locked .drop-zone {
+            pointer-events: none !important;
+        }
+
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 20%, 60% {transform: translateX(-5px);} 40%, 80% {transform: translateX(5px);} }
+
+        #finalReport {
+            display: none;
+            background: white;
+            text-align: center;
+            animation: fadeIn 0.8s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .score-display { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 15px 0; }
+        
+        @media (max-width: 600px) {
+            .sort-buckets { flex-direction: column; }
+            .header-inputs input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div class="glass">
+        <h1>📱 Життя з розумними пристроями</h1>
+        <p style="text-align: center; margin-bottom: 20px;">Заповніть свої дані, щоб розпочати урок</p>
+        
+        <div class="header-inputs">
+            <input type="text" id="studentName" placeholder="Ім'я" autocomplete="off">
+            <input type="text" id="studentSurname" placeholder="Прізвище" autocomplete="off">
+        </div>
+        <div class="progress-bar">Виконано питань: <span id="progressCount">0</span> з 12</div>
+    </div>
+
+    <!-- РОЗДІЛ 1 -->
+    <div class="glass section">
+        <h2>Розділ 1: Основи Інтернету речей (IoT)</h2>
+
+        <!-- Завдання 1 -->
+        <div class="task-card" id="task-1">
+            <div class="task-title">1. Хто і коли вперше запропонував термін «Інтернет речей» (Internet of Things, IoT)?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q1" value="a"> Алан Тюрінг у 1950 році</label>
+                <label class="option-label"><input type="radio" name="q1" value="b"> Кевін Ештон у 1999 році</label>
+                <label class="option-label"><input type="radio" name="q1" value="c"> Білл Ґейтс у 2005 році</label>
+                <label class="option-label"><input type="radio" name="q1" value="d"> Стів Джобс у 2007 році</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-1', 'q1', 'b')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 2 -->
+        <div class="task-card" id="task-2">
+            <div class="task-title">2. Який рівень архітектури IoT включає мобільні додатки та вебінтерфейси, де користувач керує пристроями?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q2" value="a"> Рівень застосування (інтерфейс)</label>
+                <label class="option-label"><input type="radio" name="q2" value="b"> Рівень фізичних сенсорів</label>
+                <label class="option-label"><input type="radio" name="q2" value="c"> Апаратний рівень</label>
+                <label class="option-label"><input type="radio" name="q2" value="d"> Мережевий рівень</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-2', 'q2', 'a')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 3 -->
+        <div class="task-card" id="task-3">
+            <div class="task-title">3. Які технології належать до МЕРЕЖЕВОГО рівня архітектури IoT? Розподіліть елементи (натисніть на слово, потім на кошик):</div>
+            <div class="chip-bank" id="bank-3">
+                <div class="chip" onclick="selectChip(this)">Wi-Fi</div>
+                <div class="chip" onclick="selectChip(this)">HTML</div>
+                <div class="chip" onclick="selectChip(this)">Bluetooth</div>
+                <div class="chip" onclick="selectChip(this)">LoRaWAN</div>
+                <div class="chip" onclick="selectChip(this)">Термостат</div>
+            </div>
+            <div class="sort-buckets">
+                <div class="bucket" onclick="dropToBucket(this, 'network')">
+                    <div class="bucket-title">🌐 Мережевий рівень</div>
+                </div>
+                <div class="bucket" onclick="dropToBucket(this, 'other')">
+                    <div class="bucket-title">❌ Інше</div>
+                </div>
+            </div>
+            <button class="btn" onclick="checkSorting('task-3')">Перевірити</button>
+        </div>
+    </div>
+
+    <!-- РОЗДІЛ 2 -->
+    <div class="glass section">
+        <h2>Розділ 2: Апаратна складова IoT</h2>
+
+        <!-- Завдання 4 -->
+        <div class="task-card" id="task-4">
+            <div class="task-title">4. Вставте пропущене слово (натисніть на фішку, потім на порожнє місце):</div>
+            <p style="margin-bottom: 15px; line-height: 2;">
+                <span class="drop-zone" id="slot-4" onclick="dropToSlot(this)"></span> відповідає за фіксацію змін у навколишньому середовищі (температури, світла, руху тощо).
+            </p>
+            <div class="chip-bank" id="bank-4">
+                <div class="chip" onclick="selectChip(this)" data-val="app">Рівень застосування</div>
+                <div class="chip" onclick="selectChip(this)" data-val="sensor">Рівень пристроїв (сенсори)</div>
+                <div class="chip" onclick="selectChip(this)" data-val="cloud">Хмарний рівень</div>
+            </div>
+            <button class="btn" onclick="checkSlot('task-4', 'slot-4', 'sensor')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 5 -->
+        <div class="task-card" id="task-5">
+            <div class="task-title">5. Яку роль відіграє мікроконтролер (наприклад, Arduino) в системі IoT?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q5" value="a"> Фіксує фізичні величини без обробки</label>
+                <label class="option-label"><input type="radio" name="q5" value="b"> Приймає дані від датчиків, обробляє їх та видає команди</label>
+                <label class="option-label"><input type="radio" name="q5" value="c"> Слугує виключно для збереження файлів</label>
+                <label class="option-label"><input type="radio" name="q5" value="d"> Забезпечує електроживлення будинку</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-5', 'q5', 'b')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 6 -->
+        <div class="task-card" id="task-6">
+            <div class="task-title">6. Що з наведеного є прикладом ВИКОНАВЧОГО пристрою (актуатора)?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q6" value="a"> Сенсор температури</label>
+                <label class="option-label"><input type="radio" name="q6" value="b"> Датчик руху</label>
+                <label class="option-label"><input type="radio" name="q6" value="c"> Світлодіод (LED), двигун або реле</label>
+                <label class="option-label"><input type="radio" name="q6" value="d"> Мікрофон</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-6', 'q6', 'c')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 7 -->
+        <div class="task-card" id="task-7">
+            <div class="task-title">7. Який модуль використовується в роботі розумного будильника для постійної передачі поточного часу?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q7" value="a"> RTC-модуль (Real Time Clock)</label>
+                <label class="option-label"><input type="radio" name="q7" value="b"> Bluetooth-модуль</label>
+                <label class="option-label"><input type="radio" name="q7" value="c"> Фоторезистор</label>
+                <label class="option-label"><input type="radio" name="q7" value="d"> Двигун-сервопривід</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-7', 'q7', 'a')">Перевірити</button>
+        </div>
+    </div>
+
+    <!-- РОЗДІЛ 3 -->
+    <div class="glass section">
+        <h2>Розділ 3: Застосування та моделювання</h2>
+
+        <!-- Завдання 8 -->
+        <div class="task-card" id="task-8">
+            <div class="task-title">8. Для чого використовують IoT-сенсори у сфері сільського господарства?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q8" value="a"> Для автоматичного перемикання світлофорів</label>
+                <label class="option-label"><input type="radio" name="q8" value="b"> Для моніторингу вологості ґрунту та автоматичного поливу</label>
+                <label class="option-label"><input type="radio" name="q8" value="c"> Для відстеження здоров'я пацієнтів</label>
+                <label class="option-label"><input type="radio" name="q8" value="d"> Для створення 3D-моделей</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-8', 'q8', 'b')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 9 -->
+        <div class="task-card" id="task-9">
+            <div class="task-title">9. Введіть назву безкоштовного онлайн-середовища (5 літер), яке дозволяє симулювати роботу мікроконтролерів у браузері:</div>
+            <input type="text" id="input-9" class="text-input-task" placeholder="Назва англійською...">
+            <button class="btn" onclick="checkInput('task-9', 'input-9', ['wokwi'])">Перевірити</button>
+        </div>
+    </div>
+
+    <!-- РОЗДІЛ 4 -->
+    <div class="glass section">
+        <h2>Розділ 4: Кібербезпека</h2>
+
+        <!-- Завдання 10 -->
+        <div class="task-card" id="task-10">
+            <div class="task-title">10. Вставте правильний термін (натисніть на фішку, потім на порожнє місце):</div>
+            <p style="margin-bottom: 15px; line-height: 2;">
+                Мережа заражених хакерами IoT-пристроїв для масштабних кібератак називається <span class="drop-zone" id="slot-10" onclick="dropToSlot(this)"></span>.
+            </p>
+            <div class="chip-bank" id="bank-10">
+                <div class="chip" onclick="selectChip(this)" data-val="phish">Фішинг</div>
+                <div class="chip" onclick="selectChip(this)" data-val="botnet">Ботнет</div>
+                <div class="chip" onclick="selectChip(this)" data-val="firewall">Брандмауер</div>
+            </div>
+            <button class="btn" onclick="checkSlot('task-10', 'slot-10', 'botnet')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 11 -->
+        <div class="task-card" id="task-11">
+            <div class="task-title">11. Які дані формують цифровий слід (цифрову тінь) користувача?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q11" value="a"> Тільки номери телефонних дзвінків</label>
+                <label class="option-label"><input type="radio" name="q11" value="b"> Лише інформація про версію ОС</label>
+                <label class="option-label"><input type="radio" name="q11" value="c"> Геолокація, історія переглядів, біометричні дані, дії в соцмережах</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-11', 'q11', 'c')">Перевірити</button>
+        </div>
+
+        <!-- Завдання 12 -->
+        <div class="task-card" id="task-12">
+            <div class="task-title">12. Що з наведеного є одним із головних правил безпеки у світі IoT?</div>
+            <div class="options-grid">
+                <label class="option-label"><input type="radio" name="q12" value="a"> Завжди залишати стандартні заводські паролі</label>
+                <label class="option-label"><input type="radio" name="q12" value="b"> Використовувати двофакторну автентифікацію та змінювати паролі</label>
+                <label class="option-label"><input type="radio" name="q12" value="c"> Вмикати геопозицію для всіх застосунків без винятку</label>
+                <label class="option-label"><input type="radio" name="q12" value="d"> Вимикати оновлення системи</label>
+            </div>
+            <button class="btn" onclick="checkRadio('task-12', 'q12', 'b')">Перевірити</button>
+        </div>
+    </div>
+
+    <!-- Кнопка завершення -->
+    <div style="text-align: center; margin: 30px 0;">
+        <button id="finishBtn" class="btn" style="font-size: 1.2rem; padding: 15px 30px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">🏁 Завершити тест та показати результат</button>
+    </div>
+
+    <!-- Фінальний звіт -->
+    <div id="finalReport" class="glass">
+        <h1 id="reportName">Твій результат!</h1>
+        <div class="score-display" id="reportScore">Твій бал: 0 з 12</div>
+        <h3 id="reportMotivation" style="margin-bottom: 20px;"></h3>
+        
+        <div style="margin: 20px 0; padding: 15px; background: #fff3cd; border-radius: 8px; color: #856404; display: inline-block; text-align: left; line-height: 1.6;">
+            <b>Спроба проходження:</b> №<span id="reportAttempt">1</span><br>
+            <b>Код верифікації:</b> <span id="verificationCode" style="font-family: monospace; font-size: 1.2rem;"></span><br>
+            <b>Перемикань вкладок:</b> <span id="escapeCount">0</span>
+        </div>
+
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px;">
+            <button class="btn" onclick="window.print()">🖨️ Зберегти звіт (PDF/Друк)</button>
+            <button class="btn" style="background: #333;" onclick="downloadHTML()">💾 Скачати файл HTML</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const TOTAL_TASKS = 12;
+    let escapeCount = 0;
+    let isFinished = false;
+    let selectedChip = null;
+    
+    // Облік спроб проходження тесту
+    let currentAttempt = parseInt(localStorage.getItem('iot_attempt_count') || '1', 10);
+
+    const tasks = {};
+    for(let i=1; i<=TOTAL_TASKS; i++) {
+        tasks[`task-${i}`] = { score: 0, completed: false };
+    }
+
+    // Захист від копіювання
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) || e.key === 'F12') {
+            e.preventDefault();
+        }
+    });
+
+    // Контроль вкладки
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && !isFinished) {
+            escapeCount++;
+        } else if (!document.hidden && !isFinished && escapeCount > 0) {
+            alert("Увага! Твоя активність поза вікном тесту фіксується системою!");
+        }
+    });
+
+    // --- ЛОГІКА ОДНОРАЗОВОЇ ПЕРЕВІРКИ ТА БЛОКУВАННЯ ---
+    function lockAndScoreTask(taskId, isCorrect) {
+        if (tasks[taskId].completed || isFinished) return;
+        
+        let taskEl = document.getElementById(taskId);
+        let t = tasks[taskId];
+        
+        t.completed = true;
+        t.score = isCorrect ? 1 : 0;
+
+        // Блокування завдання та візуальна відмітка
+        taskEl.classList.add('locked');
+        if (isCorrect) {
+            taskEl.classList.add('correct-task');
+        } else {
+            taskEl.classList.add('incorrect-task');
+            shakeError(taskEl);
+        }
+
+        let btn = taskEl.querySelector('.btn');
+        if(btn) { 
+            btn.disabled = true; 
+            btn.innerText = isCorrect ? "Правильно ✅" : "Неправильно ❌"; 
+        }
+
+        updateProgress();
+    }
+
+    function shakeError(element) {
+        element.classList.remove('shake');
+        void element.offsetWidth;
+        element.classList.add('shake');
+        setTimeout(() => element.classList.remove('shake'), 500);
+    }
+
+    function updateProgress() {
+        let completedCount = 0;
+        for(let key in tasks) {
+            if(tasks[key].completed) completedCount++;
+        }
+        document.getElementById('progressCount').innerText = completedCount;
+    }
+
+    // --- МЕХАНІКИ ВІДПОВІДЕЙ ---
+
+    function checkRadio(taskId, radioName, correctValue) {
+        const radios = document.getElementsByName(radioName);
+        let selectedValue = null;
+        for (let r of radios) { if (r.checked) selectedValue = r.value; }
+        
+        if (!selectedValue) {
+            alert("Будь ласка, оберіть варіант відповіді перед перевіркою!");
+            return;
+        }
+        
+        lockAndScoreTask(taskId, selectedValue === correctValue);
+    }
+
+    function checkInput(taskId, inputId, correctValuesArray) {
+        let val = document.getElementById(inputId).value.trim().toLowerCase();
+        if (val === '') {
+            alert("Будь ласка, введіть відповідь перед перевіркою!");
+            return;
+        }
+        
+        let isCorrect = correctValuesArray.includes(val);
+        lockAndScoreTask(taskId, isCorrect);
+    }
+
+    // Клік на фішку
+    function selectChip(chipElement) {
+        let taskCard = chipElement.closest('.task-card');
+        if(isFinished || taskCard.classList.contains('locked')) return;
+        
+        // Зняти виділення
+        taskCard.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        
+        // Виділити
+        chipElement.classList.add('selected');
+        selectedChip = chipElement;
+    }
+
+    // Механіка заміни у слотах
+    function dropToSlot(slotElement) {
+        let taskCard = slotElement.closest('.task-card');
+        if(isFinished || taskCard.classList.contains('locked')) return;
+
+        let taskIdNum = taskCard.id.split('-')[1];
+        let bank = document.getElementById('bank-' + taskIdNum);
+
+        // Якщо слот вже заповнений
+        if (slotElement.hasChildNodes()) {
+            let existingChip = slotElement.firstChild;
+            
+            // Якщо є інша обрана фішка - робимо заміни
+            if (selectedChip && selectedChip !== existingChip) {
+                bank.appendChild(existingChip);
+                existingChip.classList.remove('selected');
+                
+                slotElement.appendChild(selectedChip);
+                selectedChip.classList.remove('selected');
+                selectedChip = null;
+            } else {
+                // Повертаємо фішку в банк при повторному натисканні
+                bank.appendChild(existingChip);
+                existingChip.classList.remove('selected');
+                selectedChip = null;
+            }
+            return;
+        }
+
+        // Якщо слот порожній і фішка обрана
+        if (selectedChip && selectedChip.closest('.task-card').id === taskCard.id) {
+            slotElement.appendChild(selectedChip);
+            selectedChip.classList.remove('selected');
+            selectedChip = null;
+        }
+    }
+
+    function checkSlot(taskId, slotId, correctDataVal) {
+        let slot = document.getElementById(slotId);
+        if (!slot.hasChildNodes()) {
+            alert("Вставте фішку у порожнє місце перед перевіркою!");
+            return;
+        }
+        
+        let chip = slot.firstChild;
+        let isCorrect = (chip.getAttribute('data-val') === correctDataVal);
+        lockAndScoreTask(taskId, isCorrect);
+    }
+
+    // Сортування
+    function dropToBucket(bucketElement, bucketType) {
+        let taskCard = bucketElement.closest('.task-card');
+        if(isFinished || taskCard.classList.contains('locked')) return;
+
+        if(selectedChip && selectedChip.closest('.task-card').id === taskCard.id) {
+            selectedChip.setAttribute('data-bucket', bucketType);
+            bucketElement.appendChild(selectedChip);
+            selectedChip.classList.remove('selected');
+            selectedChip = null;
+        } else if (event.target.classList.contains('chip')) {
+             let taskIdNum = taskCard.id.split('-')[1];
+             document.getElementById('bank-' + taskIdNum).appendChild(event.target);
+             event.target.removeAttribute('data-bucket');
+        }
+    }
+
+    function checkSorting(taskId) {
+        const correctNetwork = ['Wi-Fi', 'Bluetooth', 'LoRaWAN'];
+        let taskEl = document.getElementById(taskId);
+        let allChips = taskEl.querySelectorAll('.chip');
+        let isCorrect = true;
+        let checkedCount = 0;
+
+        allChips.forEach(chip => {
+            let text = chip.innerText.trim();
+            let bucket = chip.getAttribute('data-bucket');
+            if(bucket) {
+                checkedCount++;
+                if(correctNetwork.includes(text) && bucket !== 'network') isCorrect = false;
+                if(!correctNetwork.includes(text) && bucket !== 'other') isCorrect = false;
+            }
+        });
+
+        if(checkedCount < allChips.length) {
+            alert("Будь ласка, розподіліть усі фішки по кошиках перед перевіркою!");
+            return;
+        }
+
+        lockAndScoreTask(taskId, isCorrect);
+    }
+
+    // --- ФІНІШ ТА ЗВІТ ---
+    document.getElementById('finishBtn').addEventListener('click', function() {
+        const name = document.getElementById('studentName').value.trim();
+        const surname = document.getElementById('studentSurname').value.trim();
+        
+        if (!name || !surname) {
+            alert("Будь ласка, вкажи своє Ім'я та Прізвище на початку сторінки!");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        isFinished = true;
+        this.style.display = 'none';
+
+        let totalScore = 0;
+        for(let i=1; i<=TOTAL_TASKS; i++) {
+            let t = tasks[`task-${i}`];
+            let taskEl = document.getElementById(`task-${i}`);
+            taskEl.classList.add('locked');
+            totalScore += t.score;
+        }
+
+        document.getElementById('reportName').innerText = `Твій результат, ${name} ${surname}!`;
+        document.getElementById('reportScore').innerText = `Твій бал: ${totalScore} з 12`;
+        document.getElementById('escapeCount').innerText = escapeCount;
+        document.getElementById('reportAttempt').innerText = currentAttempt;
+
+        // Генерація підсумкового хешу із врахуванням номера спроби
+        let rawStr = `${name}_${surname}_${totalScore}_${escapeCount}_Att${currentAttempt}_IoT`;
+        let code = btoa(unescape(encodeURIComponent(rawStr))).substring(0, 10).toUpperCase();
+        document.getElementById('verificationCode').innerText = code;
+
+        let mot = document.getElementById('reportMotivation');
+        if(totalScore >= 11) mot.innerText = "Відмінна робота! Справжній експерт з IoT! 🌟";
+        else if(totalScore >= 8) mot.innerText = "Гарний результат! Добре знання теми. 👍";
+        else if(totalScore >= 5) mot.innerText = "Непогано, але варто ще раз повторити матеріал. 📚";
+        else mot.innerText = "Потрібно більше практики. Не засмучуйся! 💪";
+
+        let report = document.getElementById('finalReport');
+        report.style.display = 'block';
+        
+        setTimeout(() => {
+            report.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+
+        // Збільшуємо лічильник для наступної спроби
+        localStorage.setItem('iot_attempt_count', currentAttempt + 1);
+        document.querySelectorAll('.header-inputs input').forEach(el => el.disabled = true);
+    });
+
+    function downloadHTML() {
+        const htmlContent = document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const name = document.getElementById('studentName').value || 'student';
+        const surname = document.getElementById('studentSurname').value || 'result';
+        a.download = `IoT_Урок_${surname}_${name}_Спроба_${currentAttempt}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+</script>
+</body>
+</html>
